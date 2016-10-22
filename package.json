@@ -1,0 +1,27 @@
+{
+  "name": "vmstat-s",
+  "version": "0.0.1",
+  "description": "parse the vmstat -s result for cpu/mem info on this machine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xinkaiwang/vmstat-s.git"
+  },
+  "keywords": [
+    "vmstat",
+    "cpu",
+    "ticks",
+    "mem",
+    "usage",
+    "performance"
+  ],
+  "author": "Xinkai Wang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xinkaiwang/vmstat-s/issues"
+  },
+  "homepage": "https://github.com/xinkaiwang/vmstat-s"
+}
