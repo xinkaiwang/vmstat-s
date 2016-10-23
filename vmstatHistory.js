@@ -63,6 +63,10 @@ function createVmstatHistory() {
                 summary.cpuIdle = round(cpuDetail.idleCpuTicks * ratio); // for 1 core machine, this can go up to 100.
                 summary.cpuStolen = round(cpuDetail.stolenCpuTicks * ratio);
             }
+            summary.memTotalMB = Math.round(data.totalMemoryKB/1024.0);
+            summary.memFreeMB = Math.round(data.freeMemoryKB/1024.0);
+            summary.memBufferMB = Math.round((data.bufferMemoryKB + data.swapCacheKB)/1024.0);
+            summary.memStressLevel = Math.round((data.totalMemoryKB - data.freeMemoryKB - data.bufferMemoryKB - data.swapCacheKB)/data.totalMemoryKB * 100.0);
             lastData = data;
             return {
                 lastData: data,
