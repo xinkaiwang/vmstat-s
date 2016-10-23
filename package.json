@@ -23,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/xinkaiwang/vmstat-s/issues"
   },
-  "homepage": "https://github.com/xinkaiwang/vmstat-s"
+  "homepage": "https://github.com/xinkaiwang/vmstat-s",
+  "dependencies": {
+    "underscore": "1.8.3",
+    "child_process": "1.0.2",
+    "bluebird": "3.4.6",
+    "sysconf": "~0.1.0"
+  }
 }
