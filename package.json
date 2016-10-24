@@ -2,9 +2,12 @@
   "name": "vmstat-s",
   "version": "0.0.1",
   "description": "parse the vmstat -s result for cpu/mem info on this machine",
-  "main": "index.js",
+  "main": "vmstatHistory.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "vmstat-s": "index.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +31,7 @@
     "underscore": "1.8.3",
     "child_process": "1.0.2",
     "bluebird": "3.4.6",
-    "sysconf": "~0.1.0"
+    "sysconf": "0.1.0",
+    "minimist": "1.2.0"
   }
 }

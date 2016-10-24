@@ -1,27 +1,25 @@
+#!/usr/bin/node
 
-// var fs = require('fs');
-
-// fs.readFile('./sampleInput.txt', 'utf8', function (err, text) {
-//   if (err) {
-//     return console.log(err);
-//   }
-//   var parser = require('./vmstatsParser');
-//   var data = parser(text);
-//   console.log(data);
-// });
-
-var cmd = require('./vmstatCmd');
-var parser = require('./vmstatsParser');
-
-// cmd().then(parser).then(JSON.stringify).then(console.log);
-
+// vmstat-s 5
+// Print out cpu/mem summary info every 5 seconds interval.
 var vmstatHistory  = require('./vmstatHistory');
+var argv = require('minimist')(process.argv.slice(2));
+
+console.dir(argv);
+var intervalInSeconds = 2; // default 2 seconds interval
+if (argv._ && argv._.length >= 1) {
+    intervalInSeconds = parseInt(argv._[0],10);
+}
 
 var v = null;
-vmstatHistory().then(function (history) { v = history;});
+vmstatHistory()
+    .then(function (history) { v = history;})
+    .then(function() {
+        console.log(JSON.stringify(v.getLastData().summary));
+    });
 
 function heartbeat() {
-    setTimeout(heartbeat, 2*1000);
+    setTimeout(heartbeat, intervalInSeconds*1000);
     if (v) {
         v.next()
         .then(function(data) {
@@ -34,4 +32,4 @@ function heartbeat() {
 
 setTimeout(function() {
     heartbeat();
-}, 2*1000);
+}, intervalInSeconds*1000);

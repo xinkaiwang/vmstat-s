@@ -30,49 +30,68 @@ function round(value) {
     return Math.floor(value + Math.random());
 }
 
+// return a new object
+function composeMemSummary(data) {
+    var summary = {};
+    summary.memTotalMB = Math.round(data.totalMemoryKB/1024.0);
+    summary.memFreeMB = Math.round(data.freeMemoryKB/1024.0);
+    summary.memBufferMB = Math.round((data.bufferMemoryKB + data.swapCacheKB)/1024.0);
+    summary.memStressLevel = Math.round((data.totalMemoryKB - data.freeMemoryKB - data.bufferMemoryKB - data.swapCacheKB)/data.totalMemoryKB * 100.0);
+    return summary;
+}
+
+function composeCpuDetail(lastData, data) {
+    var elapsedInMsSinceLastData = data.timestamp - lastData.timestamp;
+    var cpuDetail = {
+        elapsedInMsSinceLastData: elapsedInMsSinceLastData
+    };
+    var usedCpuTicks = 0;
+    _.each(usedCpuTicksFields, function(field) {
+        var value = access(data, field) - access(lastData, field);
+        cpuDetail[field] = value;
+        usedCpuTicks += value;
+    });
+    cpuDetail.idleCpuTicks = access(data, 'idleCpuTicks') - access(lastData, 'idleCpuTicks');
+    cpuDetail.stolenCpuTicks = access(data, 'stolenCpuTicks') - access(lastData, 'stolenCpuTicks');
+    cpuDetail.cpuTicksPerSecond = cpuTicksPerSecond;
+    var summary = {
+        upTimeInMinute: Math.round(((data.timestamp/1000.0) - data.bootTime)/60.0) // bootTime is epoch in seconds, timestamp is epoch in ms
+    };
+    if (elapsedInMsSinceLastData) {
+        var ratio = 100.0 / cpuTicksPerSecond / (elapsedInMsSinceLastData/1000.0);
+        summary.cpuUsed = round(usedCpuTicks * ratio);
+        summary.cpuIdle = round(cpuDetail.idleCpuTicks * ratio); // for 1 core machine, this can go up to 100.
+        if (cpuDetail.stolenCpuTicks) {
+            summary.cpuStolen = round(cpuDetail.stolenCpuTicks * ratio);
+        }
+    }
+    return {
+        cpuDetail: cpuDetail,
+        summary: summary
+    };
+}
 // return a promise
 function createVmstatHistory() {
     var lastData = null;
 
     function getLastData() {
-        return lastData;
+        var memSummary = composeMemSummary(lastData);
+        memSummary = _.extend({upTimeInMinute: Math.round(((lastData.timestamp/1000.0) - lastData.bootTime)/60.0)}, memSummary);
+        return {
+            lastData: lastData,
+            summary: memSummary
+        };
     }
     // returns a promise
     function next() {
         return cmd().then(parser).then(function newData(data) {
             data.timestamp = new Date().getTime(); // epoch time in ms
-            var elapsedInMsSinceLastData = data.timestamp - lastData.timestamp;
-            var cpuDetail = {
-                elapsedInMsSinceLastData: elapsedInMsSinceLastData
-            };
-            var usedCpuTicks = 0;
-            _.each(usedCpuTicksFields, function(field) {
-                var value = access(data, field) - access(lastData, field);
-                cpuDetail[field] = value;
-                usedCpuTicks += value;
-            });
-            cpuDetail.idleCpuTicks = access(data, 'idleCpuTicks') - access(lastData, 'idleCpuTicks');
-            cpuDetail.stolenCpuTicks = access(data, 'stolenCpuTicks') - access(lastData, 'stolenCpuTicks');
-            cpuDetail.cpuTicksPerSecond = cpuTicksPerSecond;
-            var summary = {
-                upTimeInMinute: Math.round(((data.timestamp/1000.0) - data.bootTime)/60.0) // bootTime is epoch in seconds, timestamp is epoch in ms
-            };
-            if (elapsedInMsSinceLastData) {
-                var ratio = 100.0 / cpuTicksPerSecond / (elapsedInMsSinceLastData/1000.0);
-                summary.cpuUsed = round(usedCpuTicks * ratio);
-                summary.cpuIdle = round(cpuDetail.idleCpuTicks * ratio); // for 1 core machine, this can go up to 100.
-                summary.cpuStolen = round(cpuDetail.stolenCpuTicks * ratio);
-            }
-            summary.memTotalMB = Math.round(data.totalMemoryKB/1024.0);
-            summary.memFreeMB = Math.round(data.freeMemoryKB/1024.0);
-            summary.memBufferMB = Math.round((data.bufferMemoryKB + data.swapCacheKB)/1024.0);
-            summary.memStressLevel = Math.round((data.totalMemoryKB - data.freeMemoryKB - data.bufferMemoryKB - data.swapCacheKB)/data.totalMemoryKB * 100.0);
+            var result = composeCpuDetail(lastData, data);
+            result.lastData = data;
+            var memSummary = composeMemSummary(data);
+            _.extend(result.summary, memSummary);
             lastData = data;
-            return {
-                lastData: data,
-                cpuDetail: cpuDetail,
-                summary: summary
-            }
+            return result;
         });
     }
     var vmstatHistory = {
