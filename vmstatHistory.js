@@ -55,7 +55,7 @@ function composeCpuDetail(lastData, data) {
     cpuDetail.stolenCpuTicks = access(data, 'stolenCpuTicks') - access(lastData, 'stolenCpuTicks');
     cpuDetail.cpuTicksPerSecond = cpuTicksPerSecond;
     var summary = {
-        upTimeInMinute: Math.round(((data.timestamp/1000.0) - data.bootTime)/60.0) // bootTime is epoch in seconds, timestamp is epoch in ms
+        upTimeInSeconds: Math.round((data.timestamp/1000.0) - data.bootTime) // bootTime is epoch in seconds, timestamp is epoch in ms
     };
     if (elapsedInMsSinceLastData) {
         var ratio = 100.0 / cpuTicksPerSecond / (elapsedInMsSinceLastData/1000.0);
@@ -76,7 +76,7 @@ function createVmstatHistory() {
 
     function getLastData() {
         var memSummary = composeMemSummary(lastData);
-        memSummary = _.extend({upTimeInMinute: Math.round(((lastData.timestamp/1000.0) - lastData.bootTime)/60.0)}, memSummary);
+        memSummary = _.extend({upTimeInSeconds: Math.round((lastData.timestamp/1000.0) - lastData.bootTime)}, memSummary);
         return {
             lastData: lastData,
             summary: memSummary
