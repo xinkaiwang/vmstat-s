@@ -1,6 +1,6 @@
 {
   "name": "vmstat-s",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "parse the vmstat -s result for cpu/mem info on this machine",
   "main": "vmstatHistory.js",
   "scripts": {
