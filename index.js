@@ -1,11 +1,10 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 // vmstat-s 5
 // Print out cpu/mem summary info every 5 seconds interval.
 var vmstatHistory  = require('./vmstatHistory');
 var argv = require('minimist')(process.argv.slice(2));
 
-console.dir(argv);
 var intervalInSeconds = 2; // default 2 seconds interval
 if (argv._ && argv._.length >= 1) {
     intervalInSeconds = parseInt(argv._[0],10);
