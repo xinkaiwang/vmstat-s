@@ -29,7 +29,7 @@ This module is based on `vmstat -s` linux command. It get memory and cpu tick co
 With [npm](https://npmjs.org) do:
 
 ```
-npm install vmstat-s
+npm install vmstat-s -g
 ```
 
 # license
