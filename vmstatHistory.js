@@ -36,7 +36,7 @@ function composeMemSummary(data) {
     summary.memTotalMB = Math.round(data.totalMemoryKB/1024.0);
     summary.memFreeMB = Math.round(data.freeMemoryKB/1024.0);
     summary.memBufferMB = Math.round((data.bufferMemoryKB + data.swapCacheKB)/1024.0);
-    summary.memStressLevel = Math.round((data.totalMemoryKB - data.freeMemoryKB - data.bufferMemoryKB - data.swapCacheKB)/data.totalMemoryKB * 100.0);
+    summary.memUsagePercent = Math.round((data.totalMemoryKB - data.freeMemoryKB - data.bufferMemoryKB - data.swapCacheKB)/data.totalMemoryKB * 100.0);
     return summary;
 }
 
