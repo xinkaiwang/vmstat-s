@@ -3,10 +3,10 @@
 var Promise = require('bluebird').Promise;
 var cmd = require('./vmstatCmd');
 var parser = require('./vmstatsParser');
-var sysconf = require('sysconf');
 var _ = require('underscore');
 
-var cpuTicksPerSecond = sysconf.get(sysconf._SC_CLK_TCK);
+// this value is almost always 100 Hz for all the computer system I have tested on. inc. x86, raspberry pi, etc.
+var cpuTicksPerSecond = 100; // require('sysconf').get(sysconf._SC_CLK_TCK);
 
 var usedCpuTicksFields = [
     'nonNiceUserCpuTicks',
